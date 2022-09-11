@@ -1,9 +1,11 @@
 # Install instructions
 
-## Install Telegram Python Library
+## Install Telegram Python Library and others
 
 ```
 py.exe -m pip install python-telegram-bot -U --pre
+py.exe -m pip install python-docx
+py.exe -m pip install docx2pdf
 ```
 https://github.com/python-telegram-bot/python-telegram-bot/wiki/Introduction-to-the-API
 
@@ -15,13 +17,19 @@ follow the botfather instructions: https://core.telegram.org/bots#6-botfather
 
 In the Telegram app, search contact for `BotFather`, be sure to add the verified one & start conversation with it
 run `\newbot` and give a name for the bot
-for purpose of this course, let call it `scb203xxx_bot`
+for purpose of this course, let call it ~~~`scb203xxx_bot`~~~ (use the name of the bot registered with the BotFather)
 a Telegram bot token will be generated, i.e. `0000000000:AAA1a-aaaaaaaaaaaaaaaaaa_aaaaaaa_aa`
+### Security
+For security reasons, telegram tokens are **NOT SHARED** and therefore need to be created for each user intending to use the code
+create a file `config.py` to store the token and other sensitive information
+```py
+token = '0000000000:AAA1a-aaaaaaaaaaaaaaaaaa_aaaaaaa_aa'
+```
 
 ## Run Python Script
-in `bot.py`, replace `TOKEN` with the token generated, i.e. 
+in `bot.py`, import the token
 ```py
-TOKEN = '0000000000:AAA1a-aaaaaaaaaaaaaaaaaa_aaaaaaa_aa'
+from config import token
 ```
 then run the script `bot.py` via the cmd prompt in the folder where the file is saved
 ```
@@ -33,6 +41,7 @@ for other example, run the respective scripts, e.g.
 ```
 py .\inlinekey.py
 ```
+currently ignore helper.py & testsuites
 
 # Design
 - `/start` -> show options, MCQ for different templates
@@ -58,85 +67,18 @@ py .\inlinekey.py
 - ask if send draft for review by user (default) or email out / etc
 - ## Template design
 - - pickled, dictionary
-
-```
-from templates import template
-from helper import get_next
-```
-
-template schema
-```jsonc
-// example form, see schema.js file
-{
-  "template_name": "safety_checklist_template_001",
-  "document_title": "Safety Checklist",
-  "version": "1.0.0",
-  "description": "This is the safety checklist for the worksite to be done weekly by safety supervisor",
-  "createdBy": "Alex",  // author of the template, different from form-filler
-  "createdAt": 683028371,  // this is referring to when template is created, different from when form is filled
-  // to be filled in same order as array
-  "fields": [
-    { "label": "Fill in Project", "name": "project", "type": "MCQ", "description": "", "options": [
-      { "key": "project1", "value": "XX project at MK 1 Lot 1" },
-      { "key": "project2", "value": "YY project at WoodlandsX" },
-      { "key": "project3", "value": "ZZ project at SembawangY" },
-    ] },
-    // { "label": "Name of Safety Supervisor", "name": "checker", "type": "String", "description": "" },  // not required as auto-filled by Telegram, form-filler
-    // { "label": "Date of check", "name": "date", "type": "Integer", "description": "" },  // not required as auto-filled
-    { "label": "\n", "description": "just a section divider", "labelOnly": true },
-
-    { "label": "Issues Raised", "name": "issues", "extendable": true, "list": [
-      { "label": "Issue", "name": "issue", "fields": [
-        { "label": "Issue Image", "name": "issue_image", "type": "Image", "description": "" },
-        { "label": "uploadedAt", "name": "uploadedAt", "type": "Int", "description": "" },
-        { "label": "uploadedBy", "name": "uploadedBy", "type": "String", "description": "" },
-        { "label": "Caption", "name": "caption", "type": "String", "description": "" },
-        { "label": "Remarks", "name": "remarks", "type": "String", "description": "" },
-      ] },
-    ] },
-  ],
-}
-// another example form
-{
-  "template_name": "toolbox_meeting_template_001",
-  "document_title": "Toolbox Meeting",
-  "version": "1.0.0",
-  "description": "",
-  "createdBy": "",
-  "createdAt": 0,
-  "fields": [
-    { "label": "Fill in Project", "name": "project", "type": "MCQ", "description": "", "options": [
-      { "key": "project1", "value": "XX project at MK 1 Lot 1" },
-      { "key": "project2", "value": "YY project at WoodlandsX" },
-      { "key": "project3", "value": "ZZ project at SembawangY" },
-    ] },
-    // { "label": "Name of Site Supervisor", "name": "checker", "type": "String", "description": "" },  // not required as auto-filled by Telegram
-    // { "label": "Date of check", "name": "date", "type": "Integer", "description": "" },  // not required as auto-filled
-    { "label": "Attendees", "name": "attendees", "extendable": true, "list": [
-      { "label": "Attendee Details", "name": "attendee", "fields": [
-        { "label": "Name", "name": "attendee_name", "type": "String", "description": "" },
-        { "label": "Designation", "name": "attendee_designation", "type": "String", "description": "" },
-        { "label": "Photo of attendee", "name": "attendee_photo", "type": "Image", "description": "" },
-        { "label": "uploadedAt", "name": "uploadedAt", "type": "Int", "description": "" },
-        { "label": "uploadedBy", "name": "uploadedBy", "type": "String", "description": "" },
-      ] },
-    ] },
-
-    { "label": "Safety Issues Raised", "name": "issues", "extendable": true, "list": [
-      { "label": "Issue", "name": "issue", "fields": [
-        { "label": "Issue Image", "name": "issue_image", "type": "Image", "description": "" },
-        { "label": "uploadedAt", "name": "uploadedAt", "type": "Int", "description": "" },
-        { "label": "uploadedBy", "name": "uploadedBy", "type": "String", "description": "" },
-        { "label": "Caption", "name": "caption", "type": "String", "description": "" },
-        { "label": "Issue Raised By", "name": "issueRaisedBy", "type": "String", "description": "" },
-        { "label": "Remarks", "name": "remarks", "type": "String", "description": "" },
-      ] },
-    ] },
-  ],
-}
+- - Python Zen, `flat is better than nested`
+- - using nested dict would require recursive function to transverse, which is a pain to write
+- - strictly, there is no need for nested structure, the input by user is linear, the output document is also linearly presented
+- - as such, a flat array with `keys` indicating relations will do that can be transversed with a simple `for` loop
+- - a drawback is that values cannot be accessed with `dict[key]`, have to search in array with
+```py
+next(filter(lambda x: x['key']=='b', array))
 ```
 
-```
+reference for MCQ-ish: https://github.com/python-telegram-bot/python-telegram-bot/blob/67e7468366098f79cd2aa4f88b40e6e47d93ae5a/examples/conversationbot2.py
+
+```py
 # this is example data from CallbackQueryHandler
 {
   'callback_query': {
@@ -170,7 +112,6 @@ template schema
 ```
 
 # Todo / To Check
-- not sure what Context Type is for
 - a way to know the picture is for what
 - i.e. cannot just accept random pictures sent
 - images sent need to be in response to query
@@ -184,46 +125,14 @@ there is no `telegram` way of doing this, just use flags
 
 https://stackoverflow.com/questions/31912730/telegram-bot-keep-questions-and-
 
-```
-ou are essentially asking: I have an application that has to keep an history of user interactions, how to do this (efficient)?
-
-To answer that: you could use a database and insert an entry for each conversation using an unique identifier. Since telegram has a chat_id for each conversation, you could use that. Depending on what you are exactly trying to store, you should choose how to store it. (an entry for each answer, or for each conversation or ...)
-```
 - need to change to webhooks / push activation instead of polling for efficiency
 https://grammy.dev/guide/deployment-types.html#how-to-use-long-polling
-
-# Todo 2
-- template transverser (template, position="", answer={}, entry = '') -> returns (next_position, answer_dict): 
-- prompt generator will create async function that writes to answer record
-
-```py
-def tranverse(template: dict = {}, address: str = '', field: str = '', answer: dict = {}, entry = None) -> list:
-  """returns an array of functions to run"""
-  result = []
-  subtemplate = get(template, address)
-  if subtemplate == None:
-    return 'invalidaddress'
-  # write entry to answer
-  if entry != None:
-    deep_set(answer, address, entry)
-  # first find fields / list / options -> default to single field
-  # ignore the rest, start with base case
-  if subtemplate['labelOnly']:
-    result.append()
-  return result
-
-def text_generator(text):
-  return async def send_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=text)
-```
-
 
 # To Learn
 - what is deeplinking / webhook
 https://towardsdatascience.com/bring-your-telegram-chatbot-to-the-next-level-c771ec7d31e4
 
-
-### Basic notes of Python script
+### Basic notes of Telegram Python script
 #### Commands
 the bot will respond to commands `\<command_name>` in the chat, e.g. `\do_stuff`
 to add new commands that can be responded to, handlers are added
