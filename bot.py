@@ -32,6 +32,7 @@ async def button(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     if query.data in ['ok', 'cancel']:
         await reset_state(update, context)
+        return
     context.user_data['selected_template'] = query.data  # flag the template
     
     # get template
