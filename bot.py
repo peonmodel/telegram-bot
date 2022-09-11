@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__) # not sure what this line do
 async def start(update: Update, context: CallbackContext) -> None:
     """Sends a message with three inline buttons attached."""
     keyboard = [
-        [InlineKeyboardButton("Simple Template", callback_data='simple_template')],
+        [InlineKeyboardButton("Simple Sample Template", callback_data='simple_template')],
         [InlineKeyboardButton("Toolbox Meeting Template", callback_data='toolbox_template')],
         # [InlineKeyboardButton("Template 3", callback_data='template_3')],
         [InlineKeyboardButton("OK", callback_data='ok'), InlineKeyboardButton(
@@ -177,6 +177,11 @@ async def wild(update: Update, context: ContextTypes.DEFAULT_TYPE):
             })
             json_result = json.dumps(tracked['record'])
             await context.bot.send_message(chat_id=update.effective_chat.id, text=json_result)
+            if tracked['template']['template_name'] == "simple_template_001":
+                not_available = '{} not available for pdf generation, please select the other template'.format(tracked['template']['document_title'])
+                await context.bot.send_message(chat_id=update.effective_chat.id, text=not_available)
+                await reset_state(update, context)
+                return
             await context.bot.send_message(chat_id=update.effective_chat.id, text="generating pdf")
             filename = await generate_pdf(tracked['template'], tracked['record'])
             await context.bot.send_message(chat_id=update.effective_chat.id, text="pdf generated")

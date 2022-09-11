@@ -21,7 +21,7 @@
 
 simpletemplate = {
     "template_name": "simple_template_001",
-    "document_title": "Simple Sample Meeting",
+    "document_title": "Simple Sample Template",
     "version": "1.0.0",
     "description": "",
     "createdBy": "",
