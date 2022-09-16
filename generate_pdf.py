@@ -42,31 +42,23 @@ async def generate_pdf(template: dict, record: dict):
     for input in record:
         if record [i]["key"] == "project.title":
             project_title = record [i]["value"]
-            i = i + 1
         elif record [i]["key"] == "project.ref":
             project_ref = record [i]["value"]
-            i = i + 1
         elif (record [i]["key"].split("."))[0] == "attendees" and (record [i]["key"].split("."))[2] == "name":
             attendees_name.append(record [i]["value"])
-            i = i + 1
         elif (record [i]["key"].split("."))[0] == "attendees" and (record [i]["key"].split("."))[2] == "designation":
             attendees_designation.append(record [i]["value"])
-            i = i + 1
         elif (record [i]["key"].split("."))[0] == "attendees" and (record [i]["key"].split("."))[2] == "photo":
             attendees_photo.append(record [i]["value"])
-            i = i + 1
         elif (record [i]["key"].split("."))[0] == "issues" and (record [i]["key"].split("."))[2] == "image":
             issues_image.append(record [i]["value"])
-            i = i + 1
         elif (record [i]["key"].split("."))[0] == "issues" and (record [i]["key"].split("."))[2] == "caption":
             issues_caption.append(record [i]["value"])
-            i = i + 1
         elif (record [i]["key"].split("."))[0] == "issues" and (record [i]["key"].split("."))[2] == "raisedBy":
             issues_raisedBy.append(record [i]["value"])
-            i = i + 1       
         elif (record [i]["key"].split("."))[0] == "issues" and (record [i]["key"].split("."))[2] == "raisedAt":
             issues_raisedAt.append(record [i]["value"])
-            i = i + 1
+        i = i + 1
 
     filename = template['document_title'] + "_" + project_title
 
@@ -97,7 +89,7 @@ async def generate_pdf(template: dict, record: dict):
         attendee_cell = table.rows[sn_attendee].cells[3]
         paragraph = attendee_cell.paragraphs[0]
         run = paragraph.add_run()
-        run.add_picture('./telegram input/'+photo, width=Inches(2.25))
+        run.add_picture('./telegram input/'+photo, width=Inches(1.25))
         sn_attendee = sn_attendee + 1
       
     document.add_paragraph('\n')
