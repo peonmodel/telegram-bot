@@ -1,24 +1,3 @@
-# [
-#     {"key": "project.title", "value": "title"}, 
-#     {"key": "project.ref", "value": "ref"}, 
-#     {"key": "attendees.0.name", "value": "jon"}, 
-#     {"key": "attendees.0.designation", "value": "pm"}, 
-#     {"key": "attendees.0.photo", "value": "p1"}, 
-#     {"key": "attendees.1.name", "value": "kon"},   <<<---- no index
-#     {"key": "attendees.1.designation", "value": "wr"}, 
-#     {"key": "attendees.1.photo", "value": "p2"}, 
-#     {"key": "issues.0.image", "value": "image"}, 
-#     {"key": "issues.0.caption", "value": "cap"}, 
-#     {"key": "issues.0.raisedBy", "value": "jon"}, 
-#     {"key": "issues.0.raisedAt", "value": "333"}, 
-#     {"key": "issues.1.image", "value": "iii"}, 
-#     {"key": "issues.1.caption", "value": "ccc"}, 
-#     {"key": "issues.1.raisedBy", "value": "kon"}, 
-#     {"key": "issues.1.raisedAt", "value": "444"}, 
-#     {"key": "tags.0", "value": "xxx"},
-#     {"key": "tags.1", "value": "yyy"},
-# ]
-
 simpletemplate = {
     "template_name": "simple_template_001",
     "document_title": "Simple Sample Template",

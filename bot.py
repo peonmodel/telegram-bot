@@ -13,15 +13,14 @@ from send_email import send_email
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
-) # not sure where to check the log
-logger = logging.getLogger(__name__) # not sure what this line do
+)
+logger = logging.getLogger(__name__)
 
 async def start(update: Update, context: CallbackContext) -> None:
-    """Sends a message with three inline buttons attached."""
+    """Sends a message with 2 inline buttons attached to select templates"""
     keyboard = [
         [InlineKeyboardButton("Simple Sample Template", callback_data='simple_template')],
         [InlineKeyboardButton("Toolbox Meeting Template", callback_data='toolbox_template')],
-        # [InlineKeyboardButton("Template 3", callback_data='template_3')],
         [InlineKeyboardButton("OK", callback_data='ok'), InlineKeyboardButton(
             "Cancel", callback_data='cancel'), ],
     ]
@@ -29,25 +28,25 @@ async def start(update: Update, context: CallbackContext) -> None:
     await update.message.reply_text('Please choose a template:', reply_markup=reply_markup)
 
 async def button(update: Update, context: CallbackContext) -> None:
+    """callback function for when button is clicked"""
     query = update.callback_query
     if query.data in ['ok', 'cancel']:
+        # to just cancel
         await reset_state(update, context)
         return
     context.user_data['selected_template'] = query.data  # flag the template
-    
-    # get template
-    # template = stored_templates.get(query.data)
+    # let user know which template is selected by them
     await query.answer(text=f"Selected template: {query.data}")
-
-    # generate a list of qna
+    # initialise record by generate a list of qna
     tracked = initialise_template(stored_templates[query.data])
-    
+    # store record in context.user_data
     context.user_data['form'] = tracked
-    # run the first one
+    # run the first question
     first_fn = tracked['questions'].pop()
     await first_fn(update, context)
 
 def initialise_template(template: dict):
+    """initialise record based on template"""
     questions = []
     expects = []
     for field in template['fields']:
@@ -60,13 +59,16 @@ def initialise_template(template: dict):
     expects = list(reversed(expects))
     store = {
         'template': template,
-        'questions': questions,
-        'expects': expects,
-        'record': []
+        'questions': questions, # simple function to print query out for user to answer
+        'expects': expects, # callback function to accept user input
+        'record': [] # where input is stored
     }
     return store
 
 def get_related_fields(field, fields):
+    """get questions that belongs in the same fieldgroup
+        e.g. zzz.aaa & zzz.bbb & zzz.ccc are together zzz={aaa:'',bbb:'',ccc:''}
+    """
     arr = field['key'].split('.')
     arr.pop()
     path = '.'.join(arr)
@@ -77,12 +79,15 @@ def get_related_fields(field, fields):
     return results
 
 def generate_append_question(field, fields, index: int = 0):
+    """for array-like items, append the group of questions that are together as a fieldgroup"""
     # first find the group of questions from fields
     async def add_more_q(update, context):
+        """ask to add to array"""
         # should be button, YES/NO, but skipping for now
         await context.bot.send_message(chat_id=update.effective_chat.id, text='Add More? Y/N')
 
     async def add_more_e(update, context):
+        """expect whether to add to array"""
         reply = update.message.text
         if reply not in ['Y', 'y', 'yes', 'Yes', 'YES']:
             return
@@ -108,14 +113,21 @@ def update_array_index(key: str, index: int = 0):
     return '.'.join(arr)
 
 def generate_question(field, questions: list, expects: list, fields: list, index: int = 0):
-    
+    """generates a question & expects pair"""
     async def question(update, context):
+        """just print text to user asking for info"""
         await context.bot.send_message(chat_id=update.effective_chat.id, text=field['label'])
 
     async def expect(update, context):
+        """callback for user input to the question"""
         reply = update.message.text
         record = context.user_data['form']['record']
         key = field['key']
+        # part of the problem with flattening the nested dict is that relationship can be hard to navigate
+        # to find which questions are "siblings" i.e. belonging to the same field group, need to scan them
+        # via the key
+        # a easier but dritier solution is to just add a isItem field to template
+        # less elegant but since template is defined by us, its okay
         if 'isItem' in field and field['isItem']:
             key = update_array_index(key, index)
         record.append({ 'key': key, 'value': reply })
@@ -154,6 +166,8 @@ async def reset_state(update, context):
     await context.bot.send_message(chat_id=update.effective_chat.id, text=text)
 
 async def wild(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """it accepts all callbacks, i.e. wild"""
+    # a dirty try/except to catch every error
     try:
         tracked = context.user_data['form']
         # next chat
@@ -198,6 +212,7 @@ async def wild(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await next_fn(update, context)
     except Exception as err:
         print(err)
+        # always reset if anything wrong
         await reset_state(update, context)
 
 def main() -> None:
