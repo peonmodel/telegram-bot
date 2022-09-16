@@ -3,7 +3,7 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from config import gmail_password
+from config import gmail_password, email_address
 
 #User input email
 # receiver_email = input("Email:")
@@ -15,7 +15,7 @@ async def send_email(receiver_email: str, record: dict, template: dict, filename
     passed in as a parameter
     """    
     #Gmail and password of bot
-    sender_email = "tele.bot202@gmail.com"
+    sender_email = email_address
     password = gmail_password
 
     project_title = record[0]['value']

@@ -22,8 +22,12 @@ a Telegram bot token will be generated, i.e. `0000000000:AAA1a-aaaaaaaaaaaaaaaaa
 ### Security
 For security reasons, telegram tokens are **NOT SHARED** and therefore need to be created for each user intending to use the code
 create a file `config.py` to store the token and other sensitive information
+
+A email account & its associated password should also be stored in config
 ```py
 token = '0000000000:AAA1a-aaaaaaaaaaaaaaaaaa_aaaaaaa_aa'
+gmail_password = "abcde"
+email_address = "et@example.com"
 ```
 
 ## Run Python Script

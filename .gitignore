@@ -1,5 +1,6 @@
 config.py
 gmail_password.py
-.pdf
-.docx
+*.pdf
+*.docx
+*.zip
 __pycache__
